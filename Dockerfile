@@ -1,11 +1,10 @@
 FROM debian:latest
 MAINTAINER Ankit R Gadiya <me@argp.in>
 
-# Install Packages
-RUN apt-get update && apt-get install -y \
+# Installation 
+RUN apt-get update \
+	&& apt-get install -y \
 		python \
-		make \
-		g++ \
 		build-essential \
 		libssl-dev \
 		apache2-utils \
@@ -13,19 +12,17 @@ RUN apt-get update && apt-get install -y \
 		git \
 		curl \
 		locales \
-		tmux
-
-# Fix locale
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
-		&& locale-gen
-
-# Install node
-RUN git clone https://github.com/creationix/nvm.git ~/.nvm
-RUN bash -c "source ~/.nvm/nvm.sh && nvm install 0.10;"
-
-# C9 Core
-RUN git clone https://github.com/c9/core.git ~/c9sdk
-RUN cd ~/c9sdk && ./scripts/install-sdk.sh
+		tmux \
+	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+	&& locale-gen \
+	&& git clone https://github.com/creationix/nvm.git ~/.nvm \
+	&& bash -c "source ~/.nvm/nvm.sh && nvm install 0.10;" \
+	&& git clone https://github.com/c9/core.git ~/c9sdk \
+	&& rm -rf ~/c9sdk/.git \
+	&& cd ~/c9sdk \
+	&& ./scripts/install-sdk.sh \
+	&& apt-get remove build-essential -y \
+	&& apt-get autoremove -y
 
 # Script
 COPY init.sh ~/.init.sh
